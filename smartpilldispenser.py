@@ -1,51 +1,18 @@
 import streamlit as st
 import firebase_admin
 from firebase_admin import credentials, db
+import json
 from datetime import time
 
 # ---------- FIREBASE INITIALIZATION ----------
 
 if not firebase_admin._apps:
-    cred = credentials.Certificate("serviceAccountKey.json")
+    # Load Firebase credentials from Streamlit secrets
+    cred_dict = st.secrets["FIREBASE"]
+    cred = credentials.Certificate(cred_dict)
     firebase_admin.initialize_app(cred, {
         "databaseURL": "https://smartpill-46c99-default-rtdb.firebaseio.com/"
     })
 
 # Reference to database
 ref = db.reference("pill_schedule/user1")
-
-# ---------- STREAMLIT UI ----------
-
-st.title("💊 Smart Pill Dispenser")
-st.write("Add medicine and schedule time:")
-
-# Input medicine name
-medicine_name = st.text_input("Medicine Name")
-
-# Input time
-pill_time = st.time_input("Select Time", value=time(8, 0))
-
-# Add medicine button
-if st.button("Add Medicine"):
-    if medicine_name.strip() == "":
-        st.warning("Enter medicine name!")
-    else:
-        t_str = pill_time.strftime("%H:%M")
-
-        # Push data to Firebase
-        ref.push({
-            "name": medicine_name,
-            "time": t_str
-        })
-
-        st.success(f"{medicine_name} added at {t_str}")
-
-# ---------- DISPLAY CURRENT SCHEDULE ----------
-
-schedule = ref.get()
-
-if schedule:
-    st.subheader("📅 Current Schedule")
-
-    for key, entry in schedule.items():
-        st.write(f"⏰ {entry['time']} - {entry['name']}")

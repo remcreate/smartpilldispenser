@@ -1,4 +1,0 @@
-streamlit
-pyrebase4==4.7.1
-pandas
-firebase-admin
