@@ -5,32 +5,42 @@ from datetime import time
 
 # ---------- FIREBASE INITIALIZATION ----------
 if not firebase_admin._apps:
-    # Create a copy of the secrets
     cred_dict = dict(st.secrets["FIREBASE"])
-
-    # Replace literal \n in private_key with actual newlines
     cred_dict["private_key"] = cred_dict["private_key"].replace("\\n", "\n")
-
-    # Initialize Firebase Admin
     cred = credentials.Certificate(cred_dict)
     firebase_admin.initialize_app(cred, {
         "databaseURL": "https://smartpill-46c99-default-rtdb.firebaseio.com/"
     })
 
-# Reference to database
 ref = db.reference("pill_schedule/user1")
 
-# ---------- STREAMLIT UI ----------
+# ---------- STREAMLIT PAGE CONFIG ----------
+st.set_page_config(
+    page_title="Smart Pill Dispenser",
+    page_icon="💊",
+    layout="centered"
+)
+
+# ---------- CENTERED LOGO ----------
+logo_url = "https://YOUR_LOGO_URL_HERE.png"  # Replace with your logo URL or use st.image with local file
+
+st.markdown(
+    f"""
+    <div style="text-align: center;">
+        <img src="{logo_url}" width="150">
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
+# ---------- TITLE ----------
 st.title("💊 Smart Pill Dispenser")
 st.write("Add medicine and schedule time:")
 
-# Input medicine name
+# ---------- INPUT FORM ----------
 medicine_name = st.text_input("Medicine Name")
-
-# Input time
 pill_time = st.time_input("Select Time", value=time(8, 0))
 
-# Add medicine button
 if st.button("Add Medicine"):
     if medicine_name.strip() == "":
         st.warning("Enter medicine name!")
@@ -39,7 +49,7 @@ if st.button("Add Medicine"):
         ref.push({"name": medicine_name, "time": t_str})
         st.success(f"{medicine_name} added at {t_str}")
 
-# Display current schedule
+# ---------- DISPLAY CURRENT SCHEDULE ----------
 schedule = ref.get()
 if schedule:
     st.subheader("📅 Current Schedule")
