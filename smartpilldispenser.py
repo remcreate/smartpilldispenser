@@ -1,16 +1,20 @@
 import streamlit as st
-import pyrebase
+import firebase_admin
+from firebase_admin import credentials, db
 from datetime import time
 
-# ---------- FIREBASE CONFIG ----------
-firebaseConfig = {
-    "apiKey": "AIzaSyDIbnJZqYQPsZrOeRL-t50kVtm6GUI7ij8",
-    "authDomain": "smartpill-46c99.firebaseapp.com",
-    "databaseURL": "https://smartpill-46c99-default-rtdb.firebaseio.com/",
-    "storageBucket": "smartpill-46c99.firebasestorage.app"
-}
-firebase = pyrebase.initialize_app(firebaseConfig)
-db = firebase.database()
+# ---------- FIREBASE INITIALIZATION ----------
+
+if not firebase_admin._apps:
+    cred = credentials.Certificate("serviceAccountKey.json")
+    firebase_admin.initialize_app(cred, {
+        "databaseURL": "https://smartpill-46c99-default-rtdb.firebaseio.com/"
+    })
+
+# Reference to database
+ref = db.reference("pill_schedule/user1")
+
+# ---------- STREAMLIT UI ----------
 
 st.title("💊 Smart Pill Dispenser")
 st.write("Add medicine and schedule time:")
@@ -21,20 +25,27 @@ medicine_name = st.text_input("Medicine Name")
 # Input time
 pill_time = st.time_input("Select Time", value=time(8, 0))
 
-# Button to add
+# Add medicine button
 if st.button("Add Medicine"):
     if medicine_name.strip() == "":
         st.warning("Enter medicine name!")
     else:
-        # Convert time to HH:MM format
         t_str = pill_time.strftime("%H:%M")
-        # Push to Firebase
-        db.child("pill_schedule").child("user1").push({"name": medicine_name, "time": t_str})
+
+        # Push data to Firebase
+        ref.push({
+            "name": medicine_name,
+            "time": t_str
+        })
+
         st.success(f"{medicine_name} added at {t_str}")
 
-# Display current schedule
-schedule = db.child("pill_schedule").child("user1").get().val()
+# ---------- DISPLAY CURRENT SCHEDULE ----------
+
+schedule = ref.get()
+
 if schedule:
     st.subheader("📅 Current Schedule")
+
     for key, entry in schedule.items():
         st.write(f"⏰ {entry['time']} - {entry['name']}")
