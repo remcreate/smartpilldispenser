@@ -2,14 +2,13 @@ import streamlit as st
 import firebase_admin
 from firebase_admin import credentials, db
 from datetime import time
-import json
 
 # ---------- FIREBASE INITIALIZATION ----------
 if not firebase_admin._apps:
-    # Load Firebase secrets from Streamlit
-    cred_dict = st.secrets["FIREBASE"]
+    # Create a copy of the secrets
+    cred_dict = dict(st.secrets["FIREBASE"])
 
-    # Convert private_key from string with literal \n to actual newlines
+    # Replace literal \n in private_key with actual newlines
     cred_dict["private_key"] = cred_dict["private_key"].replace("\\n", "\n")
 
     # Initialize Firebase Admin
