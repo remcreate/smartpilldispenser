@@ -28,9 +28,8 @@ ref = db.reference("pill_schedule/user1")
 
 # ---------- DISPLAY LOGO ----------
 # Make sure 'logo.png' is saved in the root of your repo
-st.image("logo.png", width=150, use_column_width=False)
 st.markdown("<br>", unsafe_allow_html=True)  # adds vertical spacing
-st.image("logo.png", width=100, use_column_width=False)
+st.image("logo.png", width=10, use_column_width=False)
 st.markdown("<br>", unsafe_allow_html=True)
 # ---------- TITLE ----------
 st.title("💊 Smart Pill Dispenser")
