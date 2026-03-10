@@ -3,17 +3,6 @@ import firebase_admin
 from firebase_admin import credentials, db
 from datetime import time
 
-# ---------- FIREBASE INITIALIZATION ----------
-if not firebase_admin._apps:
-    cred_dict = dict(st.secrets["FIREBASE"])
-    cred_dict["private_key"] = cred_dict["private_key"].replace("\\n", "\n")
-    cred = credentials.Certificate(cred_dict)
-    firebase_admin.initialize_app(cred, {
-        "databaseURL": "https://smartpill-46c99-default-rtdb.firebaseio.com/"
-    })
-
-ref = db.reference("pill_schedule/user1")
-
 # ---------- STREAMLIT PAGE CONFIG ----------
 st.set_page_config(
     page_title="Smart Pill Dispenser",
@@ -21,17 +10,25 @@ st.set_page_config(
     layout="centered"
 )
 
-# ---------- CENTERED LOGO ----------
-logo_url = "https://YOUR_LOGO_URL_HERE.png"  # Replace with your logo URL or use st.image with local file
+# ---------- FIREBASE INITIALIZATION ----------
+if not firebase_admin._apps:
+    # Copy secrets from Streamlit
+    cred_dict = dict(st.secrets["FIREBASE"])
+    # Fix private_key line breaks
+    cred_dict["private_key"] = cred_dict["private_key"].replace("\\n", "\n")
 
-st.markdown(
-    f"""
-    <div style="text-align: center;">
-        <img src="{logo_url}" width="150">
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+    # Initialize Firebase Admin
+    cred = credentials.Certificate(cred_dict)
+    firebase_admin.initialize_app(cred, {
+        "databaseURL": "https://smartpill-46c99-default-rtdb.firebaseio.com/"
+    })
+
+# Reference to user's pill schedule
+ref = db.reference("pill_schedule/user1")
+
+# ---------- DISPLAY LOGO ----------
+# Make sure 'logo.png' is saved in the root of your repo
+st.image("logo.png", width=150, use_column_width=False)
 
 # ---------- TITLE ----------
 st.title("💊 Smart Pill Dispenser")
