@@ -28,14 +28,7 @@ ref = db.reference("pill_schedule/user1")
 
 # ---------- DISPLAY LOGO ----------
 st.markdown("<br>", unsafe_allow_html=True)  # top spacing
-st.markdown(
-    """
-    <div style="text-align: center;">
-        <img src="logo.png" style="width:120px; height:auto;">
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+st.image("logo.png", width=120, use_column_width=False)
 st.markdown("<br>", unsafe_allow_html=True)  # spacing after logo
 # ---------- INPUT FORM ----------
 medicine_name = st.text_input("Medicine Name")
