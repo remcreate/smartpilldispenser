@@ -27,14 +27,16 @@ if not firebase_admin._apps:
 ref = db.reference("pill_schedule/user1")
 
 # ---------- DISPLAY LOGO ----------
-# Make sure 'logo.png' is saved in the root of your repo
-st.markdown("<br>", unsafe_allow_html=True)  # adds vertical spacing
-st.image("logo.png", width=10, use_column_width=False)
-st.markdown("<br>", unsafe_allow_html=True)
-# ---------- TITLE ----------
-st.title("💊 Smart Pill Dispenser")
-st.write("Add medicine and schedule time:")
-
+st.markdown("<br>", unsafe_allow_html=True)  # top spacing
+st.markdown(
+    """
+    <div style="text-align: center;">
+        <img src="logo.png" style="width:120px; height:auto;">
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+st.markdown("<br>", unsafe_allow_html=True)  # spacing after logo
 # ---------- INPUT FORM ----------
 medicine_name = st.text_input("Medicine Name")
 pill_time = st.time_input("Select Time", value=time(8, 0))
