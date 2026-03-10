@@ -1,2 +1,4 @@
 streamlit
 pyrebase4
+pandas
+firebase-admin
