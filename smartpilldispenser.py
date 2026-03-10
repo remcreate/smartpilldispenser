@@ -1,5 +1,5 @@
 import streamlit as st
-import pyrebase4
+import pyrebase
 from datetime import time
 
 # ---------- FIREBASE CONFIG ----------
