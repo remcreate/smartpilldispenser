@@ -26,10 +26,10 @@ if not firebase_admin._apps:
 # Reference to user's pill schedule
 ref = db.reference("pill_schedule/user1")
 
-# ---------- DISPLAY LOGO ----------
-st.markdown("<br>", unsafe_allow_html=True)  # top spacing
-st.image("logo.png", width=50, use_column_width=False)
-st.markdown("<br>", unsafe_allow_html=True)  # spacing after logo
+# ---------- TITLE ----------
+st.title("💊 Smart Pill Dispenser")
+st.write("Add medicine and schedule time:")
+
 # ---------- INPUT FORM ----------
 medicine_name = st.text_input("Medicine Name")
 pill_time = st.time_input("Select Time", value=time(8, 0))
