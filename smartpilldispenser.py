@@ -32,7 +32,9 @@ st.write("Add medicine and schedule time:")
 
 # ---------- INPUT FORM ----------
 medicine_name = st.text_input("Medicine Name")
-pill_time = st.time_input("Select Time", value=time(8, 0))
+
+# Allow any minute by setting step=60 (seconds)
+pill_time = st.time_input("Select Time", value=time(8, 0), step=60)
 
 if st.button("Add Medicine"):
     if medicine_name.strip() == "":
