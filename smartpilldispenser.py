@@ -12,46 +12,44 @@ st.set_page_config(
 
 # ---------- FIREBASE INITIALIZATION ----------
 if not firebase_admin._apps:
-    # Copy secrets from Streamlit
     cred_dict = dict(st.secrets["FIREBASE"])
-    # Fix private_key line breaks
     cred_dict["private_key"] = cred_dict["private_key"].replace("\\n", "\n")
-
-    # Initialize Firebase Admin
     cred = credentials.Certificate(cred_dict)
     firebase_admin.initialize_app(cred, {
         "databaseURL": "https://smartpill-46c99-default-rtdb.firebaseio.com/"
     })
 
 # Reference to user's pill schedule
-ref = db.reference("pill_schedule/user1")
+ref_times = db.reference("pill_schedule/user1/times")
 
 # ---------- TITLE ----------
 st.title("💊 Smart Pill Dispenser")
-st.write("Add medicine and schedule time:")
+st.write("Add medicine schedule time:")
 
 # ---------- INPUT FORM ----------
-medicine_name = st.text_input("Medicine Name")
 pill_time_str = st.text_input("Enter Time (HH:MM)", value="08:00")
 
-# Function to validate time format
+# Validate time format
 def is_valid_time(t):
     return re.match(r'^([01]?\d|2[0-3]):([0-5]\d)$', t)
 
-if st.button("Add Medicine"):
-    if medicine_name.strip() == "":
-        st.warning("Enter medicine name!")
-    elif not is_valid_time(pill_time_str.strip()):
+if st.button("Add Medicine Time"):
+    if not is_valid_time(pill_time_str.strip()):
         st.warning("Enter a valid time in HH:MM format!")
     else:
-        ref.push({"name": medicine_name, "time": pill_time_str.strip()})
-        st.success(f"{medicine_name} added at {pill_time_str.strip()}")
+        # Get current list from Firebase
+        current_times = ref_times.get() or []
+        if pill_time_str.strip() not in current_times:
+            current_times.append(pill_time_str.strip())
+            ref_times.set(current_times)
+            st.success(f"Medicine scheduled at {pill_time_str.strip()}")
+        else:
+            st.info(f"Time {pill_time_str.strip()} is already scheduled.")
 
 # ---------- DISPLAY CURRENT SCHEDULE ----------
-schedule = ref.get()
+schedule = ref_times.get()
 if schedule:
     st.subheader("📅 Current Schedule")
-    # Sort by time
-    sorted_schedule = sorted(schedule.items(), key=lambda x: x[1]["time"])
-    for key, entry in sorted_schedule:
-        st.write(f"⏰ {entry['time']} - {entry['name']}")
+    sorted_schedule = sorted(schedule)
+    for t in sorted_schedule:
+        st.write(f"⏰ {t}")
