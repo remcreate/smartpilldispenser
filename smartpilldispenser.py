@@ -1,7 +1,7 @@
 import streamlit as st
 import firebase_admin
 from firebase_admin import credentials, db
-from datetime import time
+import re
 
 # ---------- STREAMLIT PAGE CONFIG ----------
 st.set_page_config(
@@ -32,21 +32,26 @@ st.write("Add medicine and schedule time:")
 
 # ---------- INPUT FORM ----------
 medicine_name = st.text_input("Medicine Name")
+pill_time_str = st.text_input("Enter Time (HH:MM)", value="08:00")
 
-# Allow any minute by setting step=60 (seconds)
-pill_time = st.time_input("Select Time", value=time(8, 0), step=60)
+# Function to validate time format
+def is_valid_time(t):
+    return re.match(r'^([01]?\d|2[0-3]):([0-5]\d)$', t)
 
 if st.button("Add Medicine"):
     if medicine_name.strip() == "":
         st.warning("Enter medicine name!")
+    elif not is_valid_time(pill_time_str.strip()):
+        st.warning("Enter a valid time in HH:MM format!")
     else:
-        t_str = pill_time.strftime("%H:%M")
-        ref.push({"name": medicine_name, "time": t_str})
-        st.success(f"{medicine_name} added at {t_str}")
+        ref.push({"name": medicine_name, "time": pill_time_str.strip()})
+        st.success(f"{medicine_name} added at {pill_time_str.strip()}")
 
 # ---------- DISPLAY CURRENT SCHEDULE ----------
 schedule = ref.get()
 if schedule:
     st.subheader("📅 Current Schedule")
-    for key, entry in schedule.items():
+    # Sort by time
+    sorted_schedule = sorted(schedule.items(), key=lambda x: x[1]["time"])
+    for key, entry in sorted_schedule:
         st.write(f"⏰ {entry['time']} - {entry['name']}")
