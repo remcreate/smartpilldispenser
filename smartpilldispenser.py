@@ -19,7 +19,7 @@ if not firebase_admin._apps:
         "databaseURL": "https://smartpill-46c99-default-rtdb.firebaseio.com/"
     })
 
-# Reference to user's pill schedule
+# Reference to user's pill schedule (array of strings)
 ref_times = db.reference("pill_schedule/user1/times")
 
 # ---------- TITLE ----------
@@ -37,7 +37,7 @@ if st.button("Add Medicine Time"):
     if not is_valid_time(pill_time_str.strip()):
         st.warning("Enter a valid time in HH:MM format!")
     else:
-        # Get current list from Firebase
+        # Get current list from Firebase (as a simple array)
         current_times = ref_times.get() or []
         if pill_time_str.strip() not in current_times:
             current_times.append(pill_time_str.strip())
